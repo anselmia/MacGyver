@@ -1,30 +1,48 @@
 import config.settings as const
 from .position import Position
+import pygame as py
+from views.map import MapSprite
+from views.guardian import GuardianSprite
+from .tile import Tile
+import random
 
-class Map:
 
-    def __init__(self, filename):
-        self.filename = filename
+class Map:  
+
+    def __init__(self):
+        self.filename = const.MAP_PATH
         
-        self.paths = set()
-        self.data = {
-            "start_pos": set(),
-            "end_pos" : set()
-        }
-
-        self.load_from_file()
+        self._paths = set()
+        self._start = set()
+        self._end = set()
+        self._tiles_position = set()        
+        
+        self.tiles = []
+        self._available_tiles = const.NUMBER_OF_TILES
+        
+        self.map_size = self.load_from_file()  
+        
+        self.sprites = None       
 
     def __contains__(self, position):
-        return position in self.paths
+        return position in self._paths
 
     @property
     def start(self):
-        return list(self.data["start_pos"])[0]
-
+        return list(self._start)[0]
+    
+    @property
+    def end(self):
+        return list(self._end)[0]
+    
     def load_from_file(self):
-
-        with open(self.filename) as infile:
+        len_x = 0
+        len_y = 0
+        
+        with open(self.filename) as infile:            
             for x, line in enumerate(infile):
+                len_x += 1
+                len_y = len(line)
                 for y, c in enumerate(line):
                     if c == const.PATH_CHAR:
                         self._paths.add(Position(x,y))
@@ -34,12 +52,76 @@ class Map:
                     elif c == const.END_CHAR:
                         self._paths.add(Position(x,y))
                         self._end.add(Position(x,y))
+        
+        return len_x, len_y
+    
+    def add_map_sprite(self):
+        self.sprite = MapSprite(self.get_random_free_path())         
+    
+    def add_hero(self, hero):
+        self.hero = hero
+    
+    def add_guardian(self):
+        self.guardian_sprite = GuardianSprite(self.end)
+    
+    def add_tiles(self): 
+        for x in range(const.NUMBER_OF_TILES):
+            free_path = self.get_random_free_path()
+            self._tiles_position.add(list(free_path)[0])
+            self.tiles.append(Tile(list(free_path)[0], x))
+    
+    def get_random_free_path(self):
+        free_path = self._paths.copy()
+        free_path.discard(list(self._start)[0])
+        free_path.discard(list(self._end)[0])
+        for tile_position in self._tiles_position:
+            free_path.discard(tile_position)
+        
+        return random.sample(free_path, 1)
+    
+    def check_tile_path(self):
+        Tile = None
+        for tile in self.tiles:
+            if self.hero.position == tile.position:
+                sound = py.mixer.Sound(const.SOUND_ITEM)
+                sound.play()
+                self._available_tiles -=1
+                tile.collected = True
+                self.sprites.remove(tile.sprite)
+                Tile = tile
+                break
+        
+        if Tile != None:
+            self.tiles.remove(Tile)
+    
+    def check_win(self):
+        if self._available_tiles == 0:
+            py.mixer.music.stop()
+            sound = py.mixer.Sound(const.SOUND_WIN)
+            sound.play()            
+        else:            
+            pass
+        return 0
+    
+    def display_map(self, screen):
+        """Reads the level table, displays walls and guardian
+        and stores all non-wall tiles in available_tiles"""
 
-    def main():
-        map = Map('data/maps/map.txt')
+        wall = py.image.load(const.WALL_IMAGE).convert_alpha()
+        guardian = py.image.load(const.GUARDIAN_IMAGE).convert_alpha()
+        fond = py.image.load(const.FOND_IMAGE).convert_alpha()
+        
+        for i in range(self.map_size[0] + 1):
+            for j in range(self.map_size[1] + 1):
+                if Position(i,j) not in self._paths:
+                    screen.blit(wall, (j * const.SIZE_OF_SPRITE, i * const.SIZE_OF_SPRITE))
+                else:
+                    screen.blit(fond, (j * const.SIZE_OF_SPRITE, i * const.SIZE_OF_SPRITE))
 
-        p = Position(-1, 0)
-        print(p in map)
-
-    if __name__ == "__main__":
-        main()
+def main():
+    map = Map('data/maps/map.txt')
+    p = Position(-1, 0)
+    print(p in map)
+    
+if __name__ == "__main__":
+    main()

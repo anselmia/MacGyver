@@ -1,4 +1,12 @@
+class Positionable:
+    
+    def __init__(self):
+        super().__init__()
+        self.position = None
+        
+
 class Position:
+    
     """Represent the position of an object in th game with x vertical and y horizontal
        Some method to move on the map"""
     def __init__(self, x, y):
@@ -13,21 +21,21 @@ class Position:
     def __eq__(self, pos):
         return self.position == pos.position
 
-    def up(self, x, y):
+    def up(self):
         x, y = self.position
         return Position(x-1, y)
 
-    def down(self, x, y):
+    def down(self):
         x, y = self.position
         return Position(x+1, y)
 
-    def left(self, x, y):
+    def left(self):
         x, y = self.position
         return Position(x, y-1)
 
-    def up(self, x, y):
+    def right(self):
         x, y = self.position
-        return Position(x, y-1)
+        return Position(x, y+1)
 
     def main():
         pos = Position(1,2)
