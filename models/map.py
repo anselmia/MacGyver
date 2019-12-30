@@ -199,14 +199,6 @@ class Map:
         for enemy in self.enemies:
             enemy.move()
     
-    #def check_colision(self):
-    #    for sprite in [sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)]:
-    #        if sprite.rect.colliderect(self.hero.sprite.rect):
-    #            self.game.loose = True
-    #            return 0
-    #    
-    #    return 1
-        
 def main():
     map = Map('data/maps/map.txt')
     p = Position(-1, 0)
