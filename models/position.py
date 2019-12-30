@@ -1,10 +1,3 @@
-class Positionable:
-    
-    def __init__(self):
-        super().__init__()
-        self.position = None
-        
-
 class Position:
     
     """Represent the position of an object in th game with x vertical and y horizontal
@@ -37,12 +30,11 @@ class Position:
         x, y = self.position
         return Position(x, y+1)
 
-    def main():
-        pos = Position(1,2)
-        pos1 = Position(1,3)
-
-        print(pos == pos1)
-
-    if __name__ == "__main__":
+def main():
+    pos = Position(1,2)
+    pos1 = Position(1,3)
+    print(pos == pos1)
+    
+if __name__ == "__main__":
         main()
             

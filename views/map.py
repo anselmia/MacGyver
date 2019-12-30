@@ -5,11 +5,11 @@ from models.position import Position
 
 class MapSprite(py.sprite.Sprite):
     
-    def __init__(self, init_position):
+    def __init__(self,fond_image, init_position):
         super().__init__()
-        self.image = py.image.load(const.FOND_IMAGE).convert_alpha()
+        self.image = fond_image
         self.rect = self.image.get_rect()
-        self.rect.topleft = init_position[0].position[1], init_position[0].position[0]
+        self.rect.topleft = init_position.position[1], init_position.position[0]
         self.next_position = Position(self.rect.topleft[0], self.rect.topleft[1])
        
     def update(self):

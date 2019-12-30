@@ -1,11 +1,12 @@
 from pygame.locals import *
 
+
 class Game_Event():
     
     @staticmethod
-    def get_event(pygame, hero):
+    def get_event(py_event, hero):
         moved = False
-        for event in pygame.event.get():
+        for event in py_event.get():
             if event.type == QUIT:
                 return 0
             elif event.type == KEYDOWN:
@@ -20,6 +21,9 @@ class Game_Event():
                     
                 if moved:
                     hero.map.check_tile_path()
+                    hero.map.move_enemies()
+                    hero.map.check_colision()
+                    
                     if hero.position == hero.map.end:
                         hero.map.check_win()
                         return 0

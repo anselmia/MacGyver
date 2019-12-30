@@ -5,9 +5,9 @@ from models.position import Position
 
 class HeroSprite(py.sprite.Sprite):
     
-    def __init__(self):
+    def __init__(self, hero_image):
         super().__init__()
-        self.image = py.image.load(const.HERO_IMAGE).convert_alpha()
+        self.image = hero_image
         self.rect = self.image.get_rect()
         self.rect.topleft = (0, 0)
         self.next_position = Position(self.rect.topleft[0], self.rect.topleft[1])
