@@ -2,16 +2,22 @@ import config.settings as const
 from .position import Position
 from views.enemy import EnemySprite
 from views.guardian import GuardianSprite
+from views.tile import TileSprite
+from views.map import MapSprite
+from views.hero import HeroSprite
 from .tile import Tile
 from .enemy import Enemy
+from .hero import Hero
+from .sprite_group import SpriteGroup
 import random
 
 
 class Map:  
 
-    def __init__(self, py):
+    def __init__(self, game):
+        self.game = game
         self.filename = const.MAP_PATH
-        self.py = py
+        self.py = game.py
         
         self._paths = set()
         self._start = set()
@@ -28,8 +34,8 @@ class Map:
         #Create game window
         self.py.create_screen(self.map_size)
         self.py.load_image()
-            
-        self.sprites = None       
+        
+        self.sprites = None 
 
     def __contains__(self, position):
         return position in self._paths
@@ -66,18 +72,39 @@ class Map:
         
         return len_x, len_y
     
-    def add_sprites(self, hero):
-        self.sprites = self.py.group
+    def add_sprites(self):
+        self.sprites = SpriteGroup()
         
-        self.add_hero(hero)
         self.add_guardian()
         self.add_tiles()     
-        self.add_enemies()          
+        self.add_enemies()   
+        self.add_hero()   
+        
+        x = 0
+        for sprite in [sprite for sprite in self.sprites if isinstance(sprite, MapSprite)]:
+            sprite.order = x
+            x += 1
+            
+        for sprite in [sprite for sprite in self.sprites if isinstance(sprite, TileSprite)]:
+            sprite.order = x
+            x += 1
+            
+        for sprite in [sprite for sprite in self.sprites if isinstance(sprite, GuardianSprite)]:
+            sprite.order = x
+            x += 1
+            
+        for sprite in [sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)]:
+            sprite.order = x
+            x += 1
+            
+        for sprite in [sprite for sprite in self.sprites if isinstance(sprite, HeroSprite)]:
+            sprite.order = x
+            x += 1
     
-    def add_hero(self, hero):
-        self.hero = hero
-        self.sprites.add(hero.sprite)
-        self.sprites.add(hero.map_sprite)
+    def add_hero(self):
+        self.hero = Hero(self)
+        self.sprites.add(self.hero.sprite)
+        self.sprites.add(self.hero.map_sprite)
     
     def add_guardian(self):
         self.guardian_sprite = GuardianSprite(self.py.guardian, self.end)
@@ -126,6 +153,18 @@ class Map:
     
         return next_posible_paths
                 
+    def moved_actions(self):
+        self.check_tile_path()
+        self.move_enemies()
+        
+        play, self.game.loose = self.hero.check_colision([sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)])
+        
+        if self.hero.position == self.end:
+            self.check_win()
+            play = 0
+        
+        return play
+                
     def check_tile_path(self):
         Tile = None
         for tile in self.tiles:
@@ -142,11 +181,9 @@ class Map:
     
     def check_win(self):
         if self._available_tiles == 0:
-            self.py.music.stop()            
-            self.py.win_sound.play()            
+            self.game.win = True
         else:            
-            pass
-        return 0
+            self.game.loose = True
     
     def display_map(self):
         """Reads the level table, displays walls and path"""       
@@ -162,13 +199,13 @@ class Map:
         for enemy in self.enemies:
             enemy.move()
     
-    def check_colision(self):
-        for sprite in self.sprites:
-            if isinstance(sprite, EnemySprite):
-                if sprite.rect.colliderect(self.hero.sprite.rect):
-                    pass
-                    #Loose
-        
+    #def check_colision(self):
+    #    for sprite in [sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)]:
+    #        if sprite.rect.colliderect(self.hero.sprite.rect):
+    #            self.game.loose = True
+    #            return 0
+    #    
+    #    return 1
         
 def main():
     map = Map('data/maps/map.txt')

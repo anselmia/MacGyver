@@ -1,5 +1,4 @@
 from config.pyG_element import PyGame
-from events.events import Event
 from views.enemy import EnemySprite
 from views.map import MapSprite
 from .position import Position
@@ -15,17 +14,21 @@ class Enemy:
         self.collected = False
         self.item_number = item_number
         self.sprite = EnemySprite(PyGame.get_image_from_spritesheet(enemies_image, item_number * const.SIZE_OF_SPRITE, const.SIZE_OF_SPRITE),
-                                self.position,
-                                item_number)     
+                                  self.position,
+                                  item_number)     
         self.map_sprite = MapSprite(self.map.py.fond, self.map.get_random_free_path())       
     
     def move(self):
-        around_paths = self.map.get_free_paths_around(Position(self.sprite.rect.top / const.SIZE_OF_SPRITE,
-                                                               self.sprite.rect.left / const.SIZE_OF_SPRITE))
-        new_position = random.sample(around_paths, 1)[0]
-        self.map_sprite.next_position = self.position
-        self.position = new_position
-        self.sprite.next_position = new_position
+        try:
+            around_paths = self.map.get_free_paths_around(Position(self.sprite.rect.top / const.SIZE_OF_SPRITE,
+                                                                   self.sprite.rect.left / const.SIZE_OF_SPRITE))
+            new_position = random.sample(around_paths, 1)[0]
+            self.map_sprite.next_position = self.position
+            self.position = new_position
+            self.sprite.next_position = new_position
+        
+        except:
+            pass
           
           
 def main():

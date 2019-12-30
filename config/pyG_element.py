@@ -18,11 +18,15 @@ class PyGame():
         #Load music and play it in infinite loop
         py.mixer.music.load(const.MUSIC)
         self.music = py.mixer.music
-        self.music.play(-1)
+        #self.music.play(-1)
         
         #Load sound to be played during game on certain event
         self.item_sound = py.mixer.Sound(const.SOUND_ITEM)
         self.win_sound = py.mixer.Sound(const.SOUND_WIN)
+        self.loose_sound = py.mixer.Sound(const.SOUND_LOOSE)
+        
+        #Initialize a font for the displayed message    
+        self.font = py.font.SysFont("comicsansms", 20)
         
     def create_screen(self, map_size):
         '''Create the game window with map arg size as window size arg'''

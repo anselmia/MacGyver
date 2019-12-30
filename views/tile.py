@@ -10,6 +10,7 @@ class TileSprite(py.sprite.Sprite):
         self.image = tile_image
         self.rect = self.image.get_rect()
         self.rect.topleft = init_position.position[1] * const.SIZE_OF_SPRITE, init_position.position[0] * const.SIZE_OF_SPRITE
+        self.order = None
             
     def update(self):
         pass

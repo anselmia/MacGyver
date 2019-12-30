@@ -1,4 +1,3 @@
-from events.events import Event
 from views.tile import TileSprite
 import config.settings as const
 from config.pyG_element import PyGame

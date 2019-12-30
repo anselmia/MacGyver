@@ -10,7 +10,9 @@ class HeroSprite(py.sprite.Sprite):
         self.image = hero_image
         self.rect = self.image.get_rect()
         self.rect.topleft = (0, 0)
-        self.next_position = Position(self.rect.topleft[0], self.rect.topleft[1])
+        self.next_position = Position(self.rect.topleft[0], self.rect.topleft[1])        
+        self.order = None
         
     def update(self):
-        self.rect.topleft = self.next_position.position[1] * const.SIZE_OF_SPRITE, self.next_position.position[0] * const.SIZE_OF_SPRITE        
+        self.rect.topleft = self.next_position.position[1] * const.SIZE_OF_SPRITE, self.next_position.position[0] * const.SIZE_OF_SPRITE   
+            
