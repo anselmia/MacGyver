@@ -1,38 +1,67 @@
-from config.pyG_element import PyGame
-from views.enemy import EnemySprite
-from views.map import MapSprite
-from .position import Position
-import config.settings as const
+''' Import needed in the module '''
 import random
+import pygame as py
+import config.settings as const
+from config.pyg_element import PyGame
+from .path import PathSprite
+from .position import Position
 
 
 class Enemy:
-    
-    def __init__(self, map, enemies_image, position, item_number):
-        self.map = map
+    ''' create instance of enemy, creating instance of EnemySprite and PathSprite
+        PathSprite is used to replace enemy image after instance moved
+        arg : board, spritesheet of enemies, position and enemy count '''
+
+    def __init__(self, board, enemies_image, position, enemy_number):
+        self.board = board
         self.position = position
-        self.collected = False
-        self.item_number = item_number
-        self.sprite = EnemySprite(PyGame.get_image_from_spritesheet(enemies_image, item_number * const.SIZE_OF_SPRITE, const.SIZE_OF_SPRITE),
-                                  self.position,
-                                  item_number)     
-        self.map_sprite = MapSprite(self.map.py.fond, self.map.get_random_free_path())       
-    
+        self.last_position = position
+
+        enemy_image = PyGame.get_image_from_spritesheet(enemies_image,
+                                                        enemy_number * const.SIZE_OF_SPRITE,
+                                                        const.SIZE_OF_SPRITE)
+
+        self.sprite = EnemySprite(enemy_image,
+                                  self.position)
+
+        self.path_sprite = PathSprite(board.py.images["path"],
+                                      Position.get_random_free_position(board))
+
     def move(self):
+        ''' Move the enemy position to it's next random possible position
+        Try not return in the last position if possible'''
+
         try:
-            around_paths = self.map.get_free_paths_around(Position(self.sprite.rect.top / const.SIZE_OF_SPRITE,
-                                                                   self.sprite.rect.left / const.SIZE_OF_SPRITE))
+            around_paths = Position.next_possible_positions(self.board, self.position)
+
+            if len(around_paths) > 1 and self.last_position in around_paths:
+                around_paths.remove(self.last_position)
+
             new_position = random.sample(around_paths, 1)[0]
-            self.map_sprite.next_position = self.position
+            self.path_sprite.next_position = self.position
+            self.last_position = self.position
             self.position = new_position
             self.sprite.next_position = new_position
-        
-        except:
-            pass
-          
-          
-def main():
-    pass
 
-if __name__ == "__main__":
-    main()
+        except Exception as _e:
+            print(_e)
+
+
+class EnemySprite(py.sprite.Sprite):
+    ''' Represent the enemy as a sprite
+    Instantiate by image and initial position'''
+    def __init__(self, enemy_image, init_position):
+        super().__init__()
+
+        self.image = enemy_image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (init_position.position[1] * const.SIZE_OF_SPRITE,
+                             init_position.position[0] * const.SIZE_OF_SPRITE)
+        self.next_position = Position(self.rect.topleft[1] / const.SIZE_OF_SPRITE,
+                                      self.rect.topleft[0] / const.SIZE_OF_SPRITE)
+        self.order = None
+
+    def update(self):
+        ''' Method to update the instance position to the next position '''
+        self.rect.topleft = (self.next_position.position[1] * const.SIZE_OF_SPRITE,
+                             self.next_position.position[0] * const.SIZE_OF_SPRITE)

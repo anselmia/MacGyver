@@ -1,4 +1,7 @@
+''' Constant values for the application '''
+
 MAP_PATH = "data/maps/map.txt"
+FPS = 30
 
 SIZE_OF_SPRITE = 32
 
