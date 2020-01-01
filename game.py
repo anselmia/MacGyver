@@ -12,10 +12,14 @@ class Game:
 
         #Initialisation of pygame module and declaration of
         #the variable to be used in the application
-        self.py = PyGame()
-        self.clock = self.py.clock
+        try:
+            self.py = PyGame()
+            self.clock = self.py.clock
 
-        self.init()
+            self.init()
+
+        except Exception as E:
+            print(E)
 
     def init(self):
         ''' Initialisation of game '''
@@ -66,11 +70,11 @@ class Game:
                     if moved: #required actions when hero moved
                         self.board.check_tile_path()
                         self.board.move_enemies()
-                        
-                        play, self.game.loose = self.hero.check_colision()
 
-                        if self.hero.position == next(iter(self.end)):
-                            self.check_win()
+                        play, self.loose = self.board.hero.check_colision()
+
+                        if self.board.hero.position == next(iter(self.board.end)):
+                            self.board.check_win()
                             play = 0
 
             #Update all sprite position
