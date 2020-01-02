@@ -34,10 +34,13 @@ class Game:
         self.py.load_image()
 
         #Print the map on screen
-        self.board.display_map()
+        self.py.display_map(self.board.map_size,  self.board.paths)
 
         #Add characters to the board
         self.board.add_sprites()
+
+        #Play game music in infinite loop
+        self.py.sounds["game_music"].play(-1)
 
         self.win = False
         self.loose = False
@@ -77,14 +80,7 @@ class Game:
                             self.board.check_win()
                             play = 0
 
-            #Update all sprite position
-            self.board.sprites.update()
-
-            #redraw the sprites on the screen
-            self.board.sprites.draw(self.py.screen)
-
-            #refresh display
-            self.py.display.flip()
+            self.py.update_sprite(self.board.sprites)
 
         if self.win:
             self.win_game()
@@ -121,14 +117,8 @@ class Game:
         ''' Print a message to the player and await for the answer.
         Exit or restart the game '''
 
-        text = self.py.font.render("Do you want to continue ? yes=y/no=n",
-                                   True, (255, 0, 0), (255, 255, 255))
-        textrect = text.get_rect() #Get the rect represented by the text area to be displayed
-        textrect.centerx = self.py.screen.get_rect().centerx
-        textrect.centery = self.py.screen.get_rect().centery
-
-        #Print the text on the screen
-        self.py.screen.blit(text, textrect)
+        #Display text on window
+        self.py.display_text("Do you want to continue ? yes=y/no=n")
 
         time.sleep(.200)
 
@@ -146,6 +136,6 @@ class Game:
                     elif event.key == self.py.const.K_n:	#if "n"
                         wait = False
 
-            self.py.display.flip()
+            self.py.refresh()
 
         return continu

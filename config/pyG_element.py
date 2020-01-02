@@ -2,6 +2,7 @@
 import pygame as py
 import pygame.locals as py_cst
 import config.settings as const
+from models.position import Position
 
 
 class PyGame():
@@ -14,7 +15,6 @@ class PyGame():
         self.images = []
         self.clock = py.time.Clock()
         self.event = py.event
-        self.group = py.sprite.Group()
         self.display = py.display
         self.const = py_cst
 
@@ -29,9 +29,6 @@ class PyGame():
             "loose_sound": py.mixer.Sound(const.SOUND_LOOSE)
             }
 
-        #Play game music in infinite loop
-        #self.sounds["game_music"].play(-1)
-
         #Initialize a font for the displayed message
         self.font = py.font.SysFont("comicsansms", 20)
 
@@ -40,10 +37,10 @@ class PyGame():
 
         self.screen = py.display.set_mode((map_size[1] * const.SIZE_OF_SPRITE,
                                            map_size[0] * const.SIZE_OF_SPRITE),
-                                           py_cst.RESIZABLE)
+                                          py_cst.RESIZABLE)
 
     def load_image(self):
-        ''' Load images to be used to construct game '''
+        ''' Load images to be used to display game '''
 
         self.images = {
             "wall": py.image.load(const.WALL_IMAGE).convert(),
@@ -53,6 +50,55 @@ class PyGame():
             "tiles": py.image.load(const.TILES_IMAGE).convert_alpha(),
             "enemies": py.image.load(const.ENEMIES_IMAGE).convert_alpha()
             }
+
+    def update_sprite(self, sprite_group):
+        ''' Update the sprite position on window and refresh the window.
+        Receive a sprite.group() as arg'''
+
+        #Update all sprite position
+        sprite_group.update()
+
+        self.draw(sprite_group)
+
+        self.refresh()
+
+    def display_text(self, text):
+        ''' Display text received as arg on window '''
+
+        text = self.font.render(text,
+                                   True, (255, 0, 0), (255, 255, 255))
+        textrect = text.get_rect() #Get the rect represented by the text area to be displayed
+        textrect.centerx = self.screen.get_rect().centerx
+        textrect.centery = self.screen.get_rect().centery
+
+        #display the text on window
+        self.blit(text, textrect)
+
+    def display_map(self, map_size, paths):
+        """ display walls and pathes
+        arg : Map_size (x and y), paths positions"""
+
+        for i in range(map_size[0] + 1):
+            for j in range(map_size[1] + 1):
+                if Position(i, j) not in paths:
+                    self.blit(self.images["wall"],
+                              (j * const.SIZE_OF_SPRITE, i * const.SIZE_OF_SPRITE))
+                else:
+                    self.blit(self.images["path"],
+                              (j * const.SIZE_OF_SPRITE, i * const.SIZE_OF_SPRITE))
+
+    def blit(self, image, rect):
+        ''' Print an image on the window base on its rect arg '''
+        self.screen.blit(image, rect)
+
+    def refresh(self):
+        ''' refresh the displayed window '''
+        py.display.flip()
+
+    def draw(self, sprite_group):
+        ''' #redraw the sprites on the screen at the updated position.
+        Receive a sprite.group() '''
+        sprite_group.draw(self.screen)
 
     @staticmethod
     def get_image_from_spritesheet(tiles_image, x, sprite_size):

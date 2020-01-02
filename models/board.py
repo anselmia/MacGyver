@@ -181,20 +181,8 @@ class Board:
                 self.game.loose = True
                 break
 
-        if self.game.loose is not False:
+        if self.game.loose is False:
             self.game.win = True
-
-    def display_map(self):
-        """ display walls and pathes """
-
-        for i in range(self.map_size[0] + 1):
-            for j in range(self.map_size[1] + 1):
-                if Position(i, j) not in self._positions["paths"]:
-                    self.py.screen.blit(self.py.images["wall"], (j * const.SIZE_OF_SPRITE,
-                                                                 i * const.SIZE_OF_SPRITE))
-                else:
-                    self.py.screen.blit(self.py.images["path"], (j * const.SIZE_OF_SPRITE,
-                                                                 i * const.SIZE_OF_SPRITE))
 
     def move_enemies(self):
         """ update enemies positions """
