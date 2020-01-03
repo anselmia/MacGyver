@@ -16,7 +16,13 @@ class Position:
         return hash(self.position)
 
     def __eq__(self, pos):
-            return self.position == pos.position
+        try:
+            if pos:
+                return self.position == pos.position
+            else:
+                return False
+        except:
+            pass
 
     def up(self):
         ''' Substract 1 to x position (Move up) '''

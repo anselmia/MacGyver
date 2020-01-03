@@ -2,6 +2,7 @@
 
 MAP_PATH = "data/maps/map.txt" # path to the map as a text file containing map characters
 FPS = 30 #define game fps
+ENEMY_MOVE_TIME = 0.5 #Enemy move period
 
 SIZE_OF_SPRITE = 32 #Define the size of a position on the map.
 

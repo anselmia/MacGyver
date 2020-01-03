@@ -1,5 +1,6 @@
 ''' Module to import to run the game '''
-import time
+from time import sleep
+from datetime import datetime
 from config.pyg_element import PyGame
 import config.settings as const
 from models.board import Board
@@ -48,11 +49,14 @@ class Game:
         ''' Execute the game's actions in a loop awaiting for player instructions '''
 
         #Condition to run the game
-        play = 1
-
+        play = 1        
+        
+        #Time used to move enemies
+        start_time = datetime.now()
+        
         while play:
             self.clock.tick(const.FPS) #Setting the game FPS
-
+            
             moved = False
             for event in self.py.event.get():
                 if event.type == self.py.const.QUIT:
@@ -69,13 +73,16 @@ class Game:
 
                     if moved: #required actions when hero moved
                         self.board.check_tile_path()
-                        self.board.move_enemies()
-
                         play, self.loose = self.board.hero.check_colision()
 
                         if self.board.hero.pos["actual"] == self.board.end:
                             self.board.check_win()
                             play = 0
+            
+            # Move the enemy slower than the game loop
+            if (datetime.now() - start_time).total_seconds() > const.ENEMY_MOVE_TIME:
+                self.board.move_enemies()
+                start_time = datetime.now()
 
             self.py.update_sprite(self.board.sprites)
 
@@ -90,7 +97,7 @@ class Game:
         self.py.sounds["game_music"].stop()
         self.py.sounds["win_sound"].play()
 
-        time.sleep(.100)
+        sleep(.100)
 
         continu = self.continue_game()
         if continu == 1:
@@ -103,7 +110,7 @@ class Game:
         self.py.sounds["game_music"].stop()
         self.py.sounds["loose_sound"].play()
 
-        time.sleep(.100)
+        sleep(.100)
 
         continu = self.continue_game()
         if continu == 1:
@@ -117,7 +124,7 @@ class Game:
         #Display text on window
         self.py.display_text("Do you want to continue ? yes=y/no=n")
 
-        time.sleep(.200)
+        sleep(.200)
 
         continu = 0
         wait = True

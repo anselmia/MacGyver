@@ -167,7 +167,7 @@ class Board:
 
         tiles = [sprite for sprite in self.sprites if isinstance(sprite, TileSprite)]
         for tile in tiles:
-            if tile.collected is not False:
+            if tile.collected is False:
                 self.game.loose = True
                 break
 
