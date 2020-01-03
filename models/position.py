@@ -16,7 +16,7 @@ class Position:
         return hash(self.position)
 
     def __eq__(self, pos):
-        return self.position == pos.position
+            return self.position == pos.position
 
     def up(self):
         ''' Substract 1 to x position (Move up) '''
@@ -45,16 +45,15 @@ class Position:
     @staticmethod
     def get_random_free_position(board):
         ''' Get a random path remaining in the free path after removing object path on board '''
-
-        return random.sample(Position.get_free_positions(board), 1)[0]
+        return random.choice(Position.get_free_positions(board))
 
     @staticmethod
     def get_free_positions(board):
         ''' Get all path remaining in the free path after removing object path on board '''
-
-        free_positions = board.paths - board.start - board.end - board.tiles_position - board.enemies_position
-
-        return free_positions
+        return [position for position in board.paths if position not in (board.start,
+                                                                         board.end,
+                                                                         board.tiles_position,
+                                                                         board.enemies_position)]
 
     @staticmethod
     def next_possible_positions(board, position):
@@ -63,17 +62,17 @@ class Position:
         try to move the position in all possible move
         and return all the possible next position'''
 
-        next_possible_positions = set()
+        next_possible_positions = []
         free_positions = Position.get_free_positions(board)
 
-        around_positions = set()
-        around_positions.add(getattr(position, "right")())
-        around_positions.add(getattr(position, "left")())
-        around_positions.add(getattr(position, "up")())
-        around_positions.add(getattr(position, "down")())
+        around_positions = []
+        around_positions.append(getattr(position, "right")())
+        around_positions.append(getattr(position, "left")())
+        around_positions.append(getattr(position, "up")())
+        around_positions.append(getattr(position, "down")())
 
         for pos in around_positions:
             if pos in free_positions:
-                next_possible_positions.add(pos)
+                next_possible_positions.append(pos)
 
         return next_possible_positions

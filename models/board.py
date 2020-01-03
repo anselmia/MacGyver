@@ -1,11 +1,11 @@
 ''' Import needed in the module '''
 import config.settings as const
-from .enemy import Enemy, EnemySprite
-from .hero import Hero, HeroSprite
+from .enemy import EnemySprite
+from .hero import HeroSprite
 from .guardian import GuardianSprite
 from .position import Position
 from .path import PathSprite
-from .tile import Tile, TileSprite
+from .tile import TileSprite
 from .sprite_group import SpriteGroup
 
 class Board:
@@ -17,15 +17,10 @@ class Board:
         self.py = game.py
 
         self._positions = {
-            "paths": set(),
-            "start": set(),
-            "end": set(),
-            "tiles_position": set(),
-            "enemies_position": set()
+            "paths":[],
+            "start": None,
+            "end": None
         }
-
-        self.tiles = []
-        self.enemies = []
 
         self.map_size = self.load_from_file()
 
@@ -51,14 +46,17 @@ class Board:
         return self._positions["paths"]
 
     @property
-    def enemies_position(self):
-        ''' Enemies position '''
-        return self._positions["enemies_position"]
-
-    @property
     def tiles_position(self):
         ''' Tiles position '''
-        return self._positions["tiles_position"]
+        tiles = [sprite for sprite in self.sprites if isinstance(sprite, TileSprite)]
+        return [tile.position for tile in tiles]
+
+    @property
+    def enemies_position(self):
+        ''' Enemies position '''
+        enemies = [sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)]
+
+        return [enemy.pos["actual"] for enemy in enemies]
 
     def load_from_file(self):
         ''' From a txt file, read lines and characters
@@ -73,13 +71,13 @@ class Board:
                 len_y = len(line)
                 for y, c in enumerate(line):
                     if c == const.PATH_CHAR:
-                        self._positions["paths"].add(Position(x, y))
+                        self._positions["paths"].append(Position(x, y))
                     elif c == const.START_CHAR:
-                        self._positions["paths"].add(Position(x, y))
-                        self._positions["start"].add(Position(x, y))
+                        self._positions["paths"].append(Position(x, y))
+                        self._positions["start"] = Position(x, y)
                     elif c == const.END_CHAR:
-                        self._positions["paths"].add(Position(x, y))
-                        self._positions["end"].add(Position(x, y))
+                        self._positions["paths"].append(Position(x, y))
+                        self._positions["end"] = Position(x, y)
 
         return len_x, len_y
 
@@ -121,8 +119,8 @@ class Board:
         ''' Create instance of hero
         Add hero and map sprite from hero instance to the sprites group'''
 
-        self.hero = Hero(self)
-        self.sprites.add(self.hero.sprite)
+        self.hero = HeroSprite(self, self.py.images["hero"])
+        self.sprites.add(self.hero)
         self.sprites.add(self.hero.path_sprite)
 
     def add_guardian(self):
@@ -137,11 +135,9 @@ class Board:
         Add tiles sprite from tiles instance to the sprites group'''
 
         for x in range(const.NUMBER_OF_TILES):
-            free_path = Position.get_random_free_position(self)
-            self._positions["tiles_position"].add(free_path)
-            tile = Tile(self.py.images["tiles"], free_path, x)
-            self.tiles.append(tile)
-            self.sprites.add(tile.sprite)
+            free_position = Position.get_random_free_position(self)
+            tile = TileSprite(self.py.images["tiles"], free_position, x)
+            self.sprites.add(tile)
 
     def add_enemies(self):
         ''' Create instances of enemies
@@ -149,10 +145,8 @@ class Board:
 
         for x in range(const.NUMBER_OF_ENEMIES):
             free_position = Position.get_random_free_position(self)
-            self._positions["enemies_position"].add(free_position)
-            enemy = Enemy(self, self.py.images["enemies"], free_position, x)
-            self.enemies.append(enemy)
-            self.sprites.add(enemy.sprite)
+            enemy = EnemySprite(self, free_position, x)
+            self.sprites.add(enemy)
             self.sprites.add(enemy.path_sprite)
 
     def check_tile_path(self):
@@ -160,17 +154,13 @@ class Board:
         if position is eq, play a sound, set the tile eq to
         hero position as "collected" and remove the tile from board'''
 
-        _tile = None
-        for tile in self.tiles:
-            if self.hero.position == tile.position:
+        tiles = [sprite for sprite in self.sprites if isinstance(sprite, TileSprite)]
+        for tile in tiles:
+            if self.hero.pos["actual"] == tile.position:
                 self.py.sounds["item_sound"].play()
                 tile.collected = True
-                self.sprites.remove(tile.sprite)
-                _tile = tile
+                self.sprites.remove(tile)
                 break
-
-        if _tile is not None:
-            self.tiles.remove(_tile)
 
     def check_win(self):
         ''' Verify win condition '''
@@ -186,5 +176,6 @@ class Board:
 
     def move_enemies(self):
         """ update enemies positions """
-        for _enemy in self.enemies:
+        enemies = [sprite for sprite in self.sprites if isinstance(sprite, EnemySprite)]
+        for _enemy in enemies:
             _enemy.move()

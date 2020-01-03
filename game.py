@@ -11,15 +11,12 @@ class Game:
     def __init__(self):
 
         #Initialisation of pygame module and declaration of
-        #the variable to be used in the application
-        try:
-            self.py = PyGame()
-            self.clock = self.py.clock
+        #the variable to be used in the application        
+        self.py = PyGame()
+        self.clock = self.py.clock
 
-            self.init()
-
-        except Exception as E:
-            print(E)
+        #Game initialization (used to restart the game)
+        self.init()
 
     def init(self):
         ''' Initialisation of game '''
@@ -76,7 +73,7 @@ class Game:
 
                         play, self.loose = self.board.hero.check_colision()
 
-                        if self.board.hero.position == next(iter(self.board.end)):
+                        if self.board.hero.pos["actual"] == self.board.end:
                             self.board.check_win()
                             play = 0
 

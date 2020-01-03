@@ -65,8 +65,7 @@ class PyGame():
     def display_text(self, text):
         ''' Display text received as arg on window '''
 
-        text = self.font.render(text,
-                                   True, (255, 0, 0), (255, 255, 255))
+        text = self.font.render(text, True, (255, 0, 0), (255, 255, 255))
         textrect = text.get_rect() #Get the rect represented by the text area to be displayed
         textrect.centerx = self.screen.get_rect().centerx
         textrect.centery = self.screen.get_rect().centery
@@ -101,16 +100,16 @@ class PyGame():
         sprite_group.draw(self.screen)
 
     @staticmethod
-    def get_image_from_spritesheet(tiles_image, x, sprite_size):
+    def get_image_from_spritesheet(tiles_image, x):
         """ Grab a single image out of a larger spritesheet
         Pass in the x location of the sprite
         and the size of the sprite. """
 
         # Create a new blank image
-        image = py.Surface([sprite_size, sprite_size]).convert()
+        image = py.Surface([const.SIZE_OF_SPRITE, const.SIZE_OF_SPRITE]).convert()
 
         # Copy the sprite from the large sheet onto the smaller image
-        image.blit(tiles_image, (0, 0), (x, 0, sprite_size, sprite_size))
+        image.blit(tiles_image, (0, 0), (x, 0, const.SIZE_OF_SPRITE, const.SIZE_OF_SPRITE))
 
         # Assuming black works as the transparent color
         image.set_colorkey((0, 0, 0))
