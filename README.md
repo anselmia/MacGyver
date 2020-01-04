@@ -9,6 +9,7 @@ Le but de parcourir un labyrinthe, d'où le héro, Mac Gyver, doit tenter de s�
 ## **2. Prérequis :**
 
 Installer les dépendances : "pip install -r requirements.txt"
+
 Utiliser python 3
 
 ## **3. Paramétrage :**
@@ -40,11 +41,11 @@ Utiliser python 3
       Attention : Impérativement utilsé un spritesheet dont tous les sprites font la taille de SIZE_OF_SPRITE et sont présents sur la même rangée.
   * **ENEMIES_IMAGE :**  image des ennemis (format png ou jpg)
       Attention : Impérativement utilsé un spritesheet dont tous les sprites font la taille de SIZE_OF_SPRITE et sont présents sur la même rangée.
-  * **Musique et son du jeu :**
-    * **MUSIC :** musique de fond du jeu (format mp3 ou wav)
-    * **SOUND_ITEM :** son lorsqu'un objet est récupéré (format mp3 ou wav)
-    * **SOUND_WIN :** son lors de la victoire (format mp3 ou wav)
-    * **SOUND_LOOSE :** son lors de la défaite (format mp3 ou wav)
+* **Musique et son du jeu :**
+  * **MUSIC :** musique de fond du jeu (format mp3 ou wav)
+  * **SOUND_ITEM :** son lorsqu'un objet est récupéré (format mp3 ou wav)
+  * **SOUND_WIN :** son lors de la victoire (format mp3 ou wav)
+  * **SOUND_LOOSE :** son lors de la défaite (format mp3 ou wav)
 
 Pour modifier la map, modifier le fichier map.txt. Il faut respecter les caractères définis dans le fichier settings.
 Attention à toujours utiliser une et une seule fois les caractères représentant les position de départ et du gardien.
