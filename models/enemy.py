@@ -19,7 +19,7 @@ class EnemySprite(py.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = {
             "actual": init_position,
-            "last": None
+            "last": init_position
         }
         self.path_sprite = PathSprite(self.board,
                                       Position.get_random_free_position(board))

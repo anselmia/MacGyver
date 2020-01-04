@@ -18,8 +18,10 @@ class HeroSprite(py.sprite.Sprite):
         self.board = board
         self.pos = {
             "actual": board.start,
-            "last": None
+            "last": board.start
             }
+        #Adding a path sprite to the hero will be used to draw this sprite
+        #after the hero moved
         self.path_sprite = PathSprite(self.board, Position.get_random_free_position(board))
         self.order = None
 

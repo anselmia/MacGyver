@@ -16,13 +16,7 @@ class Position:
         return hash(self.position)
 
     def __eq__(self, pos):
-        try:
-            if pos:
-                return self.position == pos.position
-            else:
-                return False
-        except:
-            pass
+        return self.position == pos.position
 
     def up(self):
         ''' Substract 1 to x position (Move up) '''
@@ -56,10 +50,15 @@ class Position:
     @staticmethod
     def get_free_positions(board):
         ''' Get all path remaining in the free path after removing object path on board '''
-        return [position for position in board.paths if position not in (board.start,
-                                                                         board.end,
-                                                                         board.tiles_position,
-                                                                         board.enemies_position)]
+        occupied_position = []
+        occupied_position.append(board.start)
+        occupied_position.append(board.end)
+        if len(board.tiles_position) > 0:
+            occupied_position += board.tiles_position
+        if len(board.enemies_position) > 0:
+            occupied_position += board.enemies_position
+
+        return [position for position in board.paths if position not in occupied_position]
 
     @staticmethod
     def next_possible_positions(board, position):
